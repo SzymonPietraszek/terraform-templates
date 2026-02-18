@@ -9,5 +9,5 @@ Account - Cloudflare Pages:Edit
 
 terraform -chdir=cloudflare-pages init
 terraform -chdir=cloudflare-pages apply -var-file=../../terraform-vars/cloudflare-pages.tfvars
-curl $(terraform -chdir=cloudflare-pages output -raw url)
+curl "https://$(terraform -chdir=cloudflare-pages output -raw subdomain)"
 terraform -chdir=cloudflare-pages destroy -var-file=../../terraform-vars/cloudflare-pages.tfvars

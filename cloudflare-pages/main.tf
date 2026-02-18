@@ -52,6 +52,3 @@ resource "terraform_data" "trigger_initial_deploy" {
   }
 }
 
-output "url" {
-  value = "https://${cloudflare_pages_project.pages.subdomain}"
-}
