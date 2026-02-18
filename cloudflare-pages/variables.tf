@@ -1,6 +1,11 @@
 variable "account_id" { type = string }
 variable "api_token" { type = string }
 
+variable "domain_prefix" {
+  type    = string
+  default = "szymon"
+}
+
 variable "github_owner" {
   type    = string
   default = "SzymonPietraszek"
