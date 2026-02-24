@@ -1,16 +1,3 @@
-terraform {
-  required_providers {
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "5.17.0"
-    }
-  }
-}
-
-provider "cloudflare" {
-  api_token = var.api_token
-}
-
 resource "cloudflare_pages_project" "pages" {
   account_id        = var.account_id
   name              = var.domain_prefix
