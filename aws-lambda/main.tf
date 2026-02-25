@@ -21,6 +21,24 @@ resource "aws_iam_role_policy_attachment" "logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_dynamodb_table" "this" {
+  name         = "fastapi-db"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "pk"
+  attribute {
+    name = "pk"
+    type = "S"
+  }
+}
+
+resource "aws_iam_role_policy" "dynamo" {
+  role = aws_iam_role.this.id
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [{ Effect = "Allow", Action = ["dynamodb:GetItem", "dynamodb:PutItem"], Resource = aws_dynamodb_table.this.arn }]
+  })
+}
+
 resource "aws_lambda_function" "this" {
   function_name = "fastapi-lambda"
   role          = aws_iam_role.this.arn
@@ -30,6 +48,12 @@ resource "aws_lambda_function" "this" {
   handler       = var.mangun_handler_path
   runtime       = "python${var.python_version}"
 
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.this.name
+      TABLE_PK   = aws_dynamodb_table.this.hash_key
+    }
+  }
   # reserved_concurrent_executions = 1
   # Limit to 1 concurrent execution to limit costs
   # if you get an error:

@@ -20,7 +20,7 @@ variable "github_repo" {
 
 variable "github_branch" {
   type    = string
-  default = "main"
+  default = "dynamodb"
 }
 
 variable "mangun_handler_path" {
