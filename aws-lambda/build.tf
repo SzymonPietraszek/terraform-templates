@@ -15,8 +15,14 @@ resource "null_resource" "package" {
   provisioner "local-exec" {
     command = <<-EOT
       rm -rf ./build/repo ./build/package
-      git clone ${data.github_repository.this.ssh_clone_url} -b main --depth 1 ./build/repo
-      docker build -f ./build/Dockerfile --target artifact --platform linux/amd64 --output type=local,dest=./build/package --build-arg python_version=${var.python_version} build
+      git clone ${data.github_repository.this.ssh_clone_url} -b ${var.github_branch} --depth 1 ./build/repo
+      docker build \
+        -f ./build/Dockerfile \
+        --target artifact \
+        --platform linux/amd64 \
+        --output type=local,dest=./build/package \
+        --build-arg python_version=${var.python_version} \
+        build
     EOT
   }
 
@@ -35,5 +41,9 @@ resource "archive_file" "package" {
   provisioner "local-exec" {
     when    = destroy
     command = "rm ./build/package.zip"
+  }
+
+  lifecycle {
+    replace_triggered_by = [null_resource.package]
   }
 }

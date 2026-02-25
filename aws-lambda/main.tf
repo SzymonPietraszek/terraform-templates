@@ -26,6 +26,7 @@ resource "aws_lambda_function" "this" {
   role          = aws_iam_role.this.arn
   filename      = archive_file.package.output_path
   code_sha256   = archive_file.package.output_base64sha256
+  depends_on    = [archive_file.package]
   handler       = var.mangun_handler_path
   runtime       = "python${var.python_version}"
 
