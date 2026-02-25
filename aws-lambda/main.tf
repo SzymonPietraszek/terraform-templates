@@ -47,6 +47,7 @@ resource "aws_lambda_function" "this" {
   depends_on    = [archive_file.package]
   handler       = var.mangun_handler_path
   runtime       = "python${var.python_version}"
+  architectures = ["arm64"]
 
   environment {
     variables = {

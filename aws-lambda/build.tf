@@ -19,7 +19,7 @@ resource "null_resource" "package" {
       docker build \
         -f ./build/Dockerfile \
         --target artifact \
-        --platform linux/amd64 \
+        --platform linux/arm64 \
         --output type=local,dest=./build/package \
         --build-arg python_version=${var.python_version} \
         build
