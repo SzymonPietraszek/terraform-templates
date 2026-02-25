@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "this" {
   statement {
     effect = "Allow"
 
@@ -11,35 +11,23 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_iam_role" "role" {
-  name               = "role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+resource "aws_iam_role" "this" {
+  name               = "lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.this.json
 }
 
 resource "aws_iam_role_policy_attachment" "logs" {
-  role       = aws_iam_role.role.name
+  role       = aws_iam_role.this.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "archive_file" "zip" {
-  type        = "zip"
-  source_file = "${path.module}/lambda.py"
-  output_path = "${path.module}/lambda.zip"
-
-  provisioner "local-exec" {
-    command = "rm -f ${self.output_path}"
-    when    = destroy
-  }
-}
-
-
-resource "aws_lambda_function" "lambda" {
-  function_name = "lambda"
-  role          = aws_iam_role.role.arn
-  filename      = archive_file.zip.output_path
-  code_sha256   = archive_file.zip.output_base64sha256
-  handler       = "lambda.handler"
-  runtime       = "python3.14"
+resource "aws_lambda_function" "this" {
+  function_name = "fastapi-lambda"
+  role          = aws_iam_role.this.arn
+  filename      = archive_file.package.output_path
+  code_sha256   = archive_file.package.output_base64sha256
+  handler       = var.mangun_handler_path
+  runtime       = "python${var.python_version}"
 
   # reserved_concurrent_executions = 1
   # Limit to 1 concurrent execution to limit costs
@@ -50,28 +38,28 @@ resource "aws_lambda_function" "lambda" {
 }
 
 
-resource "aws_lambda_function_url" "url" {
-  function_name      = aws_lambda_function.lambda.function_name
+resource "aws_lambda_function_url" "this" {
+  function_name      = aws_lambda_function.this.function_name
   authorization_type = "AWS_IAM"
 }
 
-resource "aws_lambda_permission" "function_url_public" {
+resource "aws_lambda_permission" "this" {
   statement_id           = "AllowPublicInvokeFunctionUrl"
   action                 = "lambda:InvokeFunctionUrl"
-  function_name          = aws_lambda_function.lambda.function_name
+  function_name          = aws_lambda_function.this.function_name
   principal              = "*"
-  function_url_auth_type = aws_lambda_function_url.url.authorization_type
+  function_url_auth_type = aws_lambda_function_url.this.authorization_type
 }
 
-resource "aws_iam_user" "lambda_invoker" {
+resource "aws_iam_user" "this" {
   name = "lambda-url-invoker"
 }
 
-resource "aws_iam_access_key" "lambda_invoker" {
-  user = aws_iam_user.lambda_invoker.name
+resource "aws_iam_access_key" "this" {
+  user = aws_iam_user.this.name
 }
 
-resource "aws_iam_policy" "invoke_lambda_url" {
+resource "aws_iam_policy" "this" {
   name = "invoke-lambda-url"
 
   policy = jsonencode({
@@ -83,26 +71,13 @@ resource "aws_iam_policy" "invoke_lambda_url" {
           "lambda:InvokeFunctionUrl",
           "lambda:InvokeFunction",
         ]
-        Resource = aws_lambda_function.lambda.arn
+        Resource = aws_lambda_function.this.arn
       }
     ]
   })
 }
 
-resource "aws_iam_user_policy_attachment" "attach" {
-  user       = aws_iam_user.lambda_invoker.name
-  policy_arn = aws_iam_policy.invoke_lambda_url.arn
-}
-
-output "url" {
-  value = aws_lambda_function_url.url.function_url
-}
-
-output "access_key" {
-  value = aws_iam_access_key.lambda_invoker.id
-}
-
-output "secret_key" {
-  value     = aws_iam_access_key.lambda_invoker.secret
-  sensitive = true
+resource "aws_iam_user_policy_attachment" "this" {
+  user       = aws_iam_user.this.name
+  policy_arn = aws_iam_policy.this.arn
 }
