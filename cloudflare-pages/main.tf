@@ -18,6 +18,42 @@ resource "cloudflare_pages_project" "pages" {
     type = "github"
   }
 }
+resource "cloudflare_zero_trust_access_identity_provider" "google" {
+  config = {
+    client_id     = var.google_client_id
+    client_secret = var.google_client_secret
+  }
+  name       = "pages-google"
+  type       = "google"
+  account_id = var.account_id
+}
+
+resource "cloudflare_zero_trust_access_policy" "policy" {
+  account_id = var.account_id
+  decision   = "allow"
+  name       = "pages-policy"
+
+  include = [{
+    email = {
+      email = "${var.email}"
+    }
+  }]
+}
+
+resource "cloudflare_zero_trust_access_application" "access" {
+  account_id       = var.account_id
+  name             = "pages-access"
+  domain           = cloudflare_pages_project.pages.subdomain
+  session_duration = "24h"
+  type             = "self_hosted"
+  allowed_idps     = [cloudflare_zero_trust_access_identity_provider.google.id]
+  policies = [
+    {
+      id         = cloudflare_zero_trust_access_policy.policy.id
+      precedence = 1
+    }
+  ]
+}
 
 # As described here: https://github.com/cloudflare/terraform-provider-cloudflare/issues/3099
 # creating a pages project won't automatically deploy it, so we need to trigger the deployment manually

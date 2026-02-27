@@ -15,3 +15,7 @@ variable "github_repo" {
   type    = string
   default = "cloudflare-pages-example"
 }
+
+variable "email" { type = string }
+variable "google_client_id" { type = string }
+variable "google_client_secret" { type = string }
