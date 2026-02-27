@@ -17,7 +17,22 @@ resource "cloudflare_pages_project" "pages" {
     }
     type = "github"
   }
+
+  deployment_configs = {
+    preview = {
+    }
+
+    production = {
+      env_vars = {
+        "SECRET" = {
+          type  = "secret_text",
+          value = "VERY SECRET THING"
+        },
+      }
+    }
+  }
 }
+
 resource "cloudflare_zero_trust_access_identity_provider" "google" {
   config = {
     client_id     = var.google_client_id
