@@ -1,7 +1,7 @@
 resource "cloudflare_pages_project" "pages" {
   account_id        = var.account_id
   name              = var.domain_prefix
-  production_branch = "main"
+  production_branch = var.github_branch
 
   build_config = {
     build_command   = "npm run build"
@@ -12,7 +12,7 @@ resource "cloudflare_pages_project" "pages" {
     config = {
       production_deployments_enabled = true
       owner                          = var.github_owner
-      production_branch              = "main"
+      production_branch              = var.github_branch
       repo_name                      = var.github_repo
     }
     type = "github"
@@ -67,7 +67,7 @@ resource "terraform_data" "trigger_initial_deploy" {
       curl -X POST "https://api.cloudflare.com/client/v4/accounts/${var.account_id}/pages/projects/${cloudflare_pages_project.pages.name}/deployments" \
            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
            -H "Content-Type: application/json" \
-           --data '{"branch":"main"}'
+           --data '{"branch":"${var.github_branch}"}'
     EOT
     environment = {
       CLOUDFLARE_API_TOKEN = var.api_token

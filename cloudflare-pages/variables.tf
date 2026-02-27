@@ -1,5 +1,8 @@
 variable "account_id" { type = string }
 variable "api_token" { type = string }
+variable "email" { type = string }
+variable "google_client_id" { type = string }
+variable "google_client_secret" { type = string }
 
 variable "domain_prefix" {
   type    = string
@@ -16,6 +19,7 @@ variable "github_repo" {
   default = "cloudflare-pages-example"
 }
 
-variable "email" { type = string }
-variable "google_client_id" { type = string }
-variable "google_client_secret" { type = string }
+variable "github_branch" {
+  type    = string
+  default = "main"
+}
