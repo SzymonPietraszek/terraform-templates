@@ -12,5 +12,8 @@ https://developers.cloudflare.com/cloudflare-one/integrations/identity-providers
 
 terraform -chdir=cloudflare-pages init
 terraform -chdir=cloudflare-pages apply -var-file=../../terraform-vars/cloudflare-pages.tfvars
-Open the output url and test if you can login
+
+You need to wait for a minute or two before a page will be running.
+Then open the output url and test if you can login.
+
 terraform -chdir=cloudflare-pages destroy -var-file=../../terraform-vars/cloudflare-pages.tfvars

@@ -2,6 +2,7 @@ Prerequisites:
 1. Create an AWS account
 2. Run "aws configure" to set access key id and secret access key
 3. Create a github fastAPI project with app folder with all the code, app/main.py file with mangun handler (or change mangun_handler_path) and requirements.txt file in a root folder
+4. Run docker daemon
 
 
 terraform -chdir=aws-lambda init

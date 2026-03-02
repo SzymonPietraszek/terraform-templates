@@ -6,7 +6,7 @@ variable "google_client_secret" { type = string }
 
 variable "domain_prefix" {
   type    = string
-  default = "szymon"
+  default = "szymon-cloudflare-pages"
 }
 
 variable "github_owner" {
@@ -21,5 +21,5 @@ variable "github_repo" {
 
 variable "github_branch" {
   type    = string
-  default = "main"
+  default = "cloudflare-pages"
 }
