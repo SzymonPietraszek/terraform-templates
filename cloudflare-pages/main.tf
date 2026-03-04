@@ -1,4 +1,4 @@
-resource "cloudflare_pages_project" "pages" {
+resource "cloudflare_pages_project" "this" {
   account_id        = var.account_id
   name              = var.domain_prefix
   production_branch = var.github_branch
@@ -33,7 +33,7 @@ resource "cloudflare_pages_project" "pages" {
   }
 }
 
-resource "cloudflare_zero_trust_access_identity_provider" "google" {
+resource "cloudflare_zero_trust_access_identity_provider" "this" {
   config = {
     client_id     = var.google_client_id
     client_secret = var.google_client_secret
@@ -43,7 +43,7 @@ resource "cloudflare_zero_trust_access_identity_provider" "google" {
   account_id = var.account_id
 }
 
-resource "cloudflare_zero_trust_access_policy" "policy" {
+resource "cloudflare_zero_trust_access_policy" "this" {
   account_id = var.account_id
   decision   = "allow"
   name       = "pages-policy"
@@ -55,16 +55,16 @@ resource "cloudflare_zero_trust_access_policy" "policy" {
   }]
 }
 
-resource "cloudflare_zero_trust_access_application" "access" {
+resource "cloudflare_zero_trust_access_application" "this" {
   account_id       = var.account_id
   name             = "pages-access"
-  domain           = cloudflare_pages_project.pages.subdomain
+  domain           = cloudflare_pages_project.this.subdomain
   session_duration = "24h"
   type             = "self_hosted"
-  allowed_idps     = [cloudflare_zero_trust_access_identity_provider.google.id]
+  allowed_idps     = [cloudflare_zero_trust_access_identity_provider.this.id]
   policies = [
     {
-      id         = cloudflare_zero_trust_access_policy.policy.id
+      id         = cloudflare_zero_trust_access_policy.this.id
       precedence = 1
     }
   ]
@@ -74,12 +74,12 @@ resource "cloudflare_zero_trust_access_application" "access" {
 # creating a pages project won't automatically deploy it, so we need to trigger the deployment manually
 resource "terraform_data" "trigger_initial_deploy" {
   triggers_replace = [
-    cloudflare_pages_project.pages.id
+    cloudflare_pages_project.this.id
   ]
 
   provisioner "local-exec" {
     command = <<EOT
-      curl -X POST "https://api.cloudflare.com/client/v4/accounts/${var.account_id}/pages/projects/${cloudflare_pages_project.pages.name}/deployments" \
+      curl -X POST "https://api.cloudflare.com/client/v4/accounts/${var.account_id}/pages/projects/${cloudflare_pages_project.this.name}/deployments" \
            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
            -H "Content-Type: application/json" \
            --data '{"branch":"${var.github_branch}"}'
