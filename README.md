@@ -1,5 +1,6 @@
 # Goal
-These configurations can be used as a blueprint for internet accessible projects without public access. So if you try to deploy a simple app that you wish you can access on any device anywhere but requires authentication, you can use these configurations. A fullstack configuration is a composition of aws-lambda backend and cloudflare-pages frontend with main focus on secure connection between two.
+There are 3 separate terrafrom configurations in this repo: aws-lambda, cloudflare-pages and fullstack. These configurations can be used as a blueprint for internet accessible projects without public access for free. So if you try to deploy a simple app that you wish you can access on any device anywhere but requires authentication, you can use these configurations. A fullstack configuration is a composition of aws-lambda backend and cloudflare-pages frontend with main focus on secure connection between two. 
+
 There are two other repos related to these configurations: cloudflare-pages-example and lambda-fastapi. Both has branches related to each terraform configuration for deployment.
 
 # Fullstack diagram
