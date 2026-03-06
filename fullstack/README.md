@@ -20,4 +20,12 @@ terraform -chdir=fullstack apply -var-file=../../terraform-vars/fullstack.tfvars
 You need to wait for a minute or two before a page will be running.
 Then open the output url and test if you can login.
 
+You can create a request to backend in Insomnia to $(terraform -chdir=aws-lambda output url) with Auth: AWS IAM set with
+terraform -chdir=fullstack console
+> module.backend.url
+> nonsensitive(module.backend.access_key.id)
+> nonsensitive(module.backend.access_key.secret)
+Region: eu-central-1
+Service: lambda
+
 terraform -chdir=fullstack destroy -var-file=../../terraform-vars/fullstack.tfvars
