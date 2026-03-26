@@ -1,3 +1,7 @@
+# This repo is archived!
+The work done in this repo was used in https://github.com/free-website-framework
+
+
 # Goal
 There are 3 separate terrafrom configurations in this repo: aws-lambda, cloudflare-pages and fullstack. These configurations can be used as a blueprint for internet accessible projects without public access for free. So if you try to deploy a simple app that you wish you can access on any device anywhere but requires authentication, you can use these configurations. A fullstack configuration is a composition of aws-lambda backend and cloudflare-pages frontend with main focus on secure connection between two. 
 
